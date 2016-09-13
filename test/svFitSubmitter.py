@@ -37,6 +37,7 @@ def parse_command_line(argv):
     parser.add_argument('-es','--doES',nargs='?',type=str,const='',help='Doing TES / EES shifts?')
     parser.add_argument('-r','--recoilType',nargs='?',type=str,const='',help='Input files are which recoil type?')
     parser.add_argument('-iswj','--isWJets',nargs='?',type=str,const='',help='Are input files WJets samples?')
+    parser.add_argument('-mt','--metType',nargs='?',type=str,const='',help='MvaMet = 1, Pf Met = -1')
     args = parser.parse_args(argv)
 
     return args
@@ -96,14 +97,16 @@ def main(argv=None):
     bash_name = '%s/%s_%i_%s.sh' % (dag_dir+'inputs', channel, period, sample_name)
 #SVFitStandAlone outputFile="WZ.root" newOutputFile=1.0 newFile="none"
     bashScript = "#!/bin/bash\n value=$(<$INPUT)\n echo \"$value\"\n"
-    bashScript += '$CMSSW_BASE/bin/slc6_amd64_gcc493/SVFitStandAloneFSA outputfile=$value newOutputFile=1.0 newFile=\'$OUTPUT\'' #% (channel, sample_name, period)
+    bashScript += '$CMSSW_BASE/bin/$SCRAM_ARCH/SVFitStandAloneFSA inputfile=$value newOutputFile=1.0 newFile=\'$OUTPUT\'' #% (channel, sample_name, period)
     if args.recoilType : recoilType = "recoilType="+args.recoilType
     else : recoilType = ''
     if args.doES : doES = "doES="+args.doES
     else : doES = ''
     if args.isWJets : isWJets = "isWJets="+args.isWJets
     else : isWJets = ''
-    bashScript += ' %s %s %s' % (recoilType, doES, isWJets)
+    if args.metType : metType = "metType="+args.metType
+    else : metType = ''
+    bashScript += ' %s %s %s %s' % (recoilType, doES, isWJets, metType)
     bashScript += '\n'
     with open(bash_name,'w') as file:
         file.write(bashScript)
