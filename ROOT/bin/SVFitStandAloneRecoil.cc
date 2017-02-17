@@ -70,11 +70,11 @@ int main (int argc, char* argv[])
 
 void readdir(TDirectory *dir, optutl::CommandLineParser parser, char TreeToUse[], int recoilType) 
 {
-	std::string recoilFileName = "HTT-utilities/RecoilCorrections/data/recoilMvaMEt_76X_newTraining.root";
+	std::string recoilFileName = "HTT-utilities/RecoilCorrections/data/MvaMET_MG_2016BCD.root";
 	if(recoilType == 1) //amc@nlo
-		recoilFileName = "HTT-utilities/RecoilCorrections/data/recoilMvaMEt_76X_newTraining.root";
+	    recoilFileName = "HTT-utilities/RecoilCorrections/data/MvaMET_MG_2016BCD.root";//replace later
 	if(recoilType == 2) //MG5
-		recoilFileName = "HTT-utilities/RecoilCorrections/data/recoilMvaMEt_76X_newTraining_MG5.root";
+	    recoilFileName = "HTT-utilities/RecoilCorrections/data/MvaMET_MG_2016BCD.root";
 
 	TDirectory *dirsav = gDirectory;
 	TIter next(dir->GetListOfKeys());

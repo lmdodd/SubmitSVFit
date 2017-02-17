@@ -3,7 +3,7 @@ pushd $CMSSW_BASE/src
 
 git clone git@github.com:veelken/SVFit_standalone.git TauAnalysis/SVfitStandalone
 pushd TauAnalysis/SVfitStandalone
-git checkout dd7cf43e3f930040959f7d700cef976307d7cec3
+git checkout HIG-16-006 
 popd
 
 

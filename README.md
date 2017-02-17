@@ -26,6 +26,7 @@ ROOT/bin/SVFitStandAloneFSA.cc
 To run in interactive mode for example:
 ```
 SVFitStandAloneFSA inputFile=coolInputFile.root newOutputFile=1 newFile=tmpOut.root doES=1
+SVFitStandAloneRecoilPF inputFile=coolInputFile.root newOutputFile=1 newFile=tmpOut.root doES=1
 ```
 
  - inputFile = obvious
