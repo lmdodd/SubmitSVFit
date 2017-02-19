@@ -29,51 +29,51 @@ void runSVFit(std::vector<svFitStandalone::MeasuredTauLepton> & measuredTauLepto
 
 int main (int argc, char* argv[]) 
 {
-	optutl::CommandLineParser parser ("Sets Event Weights in the ntuple");
-	parser.addOption("branch",optutl::CommandLineParser::kString,"Branch","__svFit__");
-	parser.addOption("newFile",optutl::CommandLineParser::kString,"newFile","newFile");
-	parser.addOption("newOutputFile",optutl::CommandLineParser::kDouble,"New Output File",0.0);
-	parser.addOption("recoilType",optutl::CommandLineParser::kDouble,"recoilType",0.0);
+    optutl::CommandLineParser parser ("Sets Event Weights in the ntuple");
+    parser.addOption("branch",optutl::CommandLineParser::kString,"Branch","__svFit__");
+    parser.addOption("newFile",optutl::CommandLineParser::kString,"newFile","newFile");
+    parser.addOption("newOutputFile",optutl::CommandLineParser::kDouble,"New Output File",0.0);
+    parser.addOption("recoilType",optutl::CommandLineParser::kDouble,"recoilType",0.0);
     parser.addOption("doES",optutl::CommandLineParser::kDouble,"doES",0.0);
     parser.addOption("isWJets",optutl::CommandLineParser::kDouble,"isWJets",0.0);
     parser.addOption("metType",optutl::CommandLineParser::kDouble,"metType",-1.0); // -1 = pf met default
 
 
-	parser.parseArguments (argc, argv);
+    parser.parseArguments (argc, argv);
 
-   assert (parser.doubleValue("metType") == 1.0 || parser.doubleValue("metType") == -1.0);
-   std::cout << "EXTRA COMMANDS:"
-    << "\n --- recoilType: " << parser.doubleValue("recoilType")
-    << "\n --- doES: " << parser.doubleValue("doES")
-    << "\n --- isWJets: " << parser.doubleValue("isWJets")
-    << "\n --- metType: " << parser.doubleValue("metType") << std::endl;
+    assert (parser.doubleValue("metType") == 1.0 || parser.doubleValue("metType") == -1.0);
+    std::cout << "EXTRA COMMANDS:"
+        << "\n --- recoilType: " << parser.doubleValue("recoilType")
+        << "\n --- doES: " << parser.doubleValue("doES")
+        << "\n --- isWJets: " << parser.doubleValue("isWJets")
+        << "\n --- metType: " << parser.doubleValue("metType") << std::endl;
 
 
-	char TreeToUse[80]="first" ;
+    char TreeToUse[80]="first" ;
 
-	TFile *fProduce;//= new TFile(parser.stringValue("newFile").c_str(),"UPDATE");
+    TFile *fProduce;//= new TFile(parser.stringValue("newFile").c_str(),"UPDATE");
 
-	if(parser.doubleValue("newOutputFile")>0){
-		TFile *f = new TFile(parser.stringValue("outputFile").c_str(),"READ");
-		std::cout<<"Creating new outputfile"<<std::endl;
-		std::string newFileName = parser.stringValue("newFile");
+    if(parser.doubleValue("newOutputFile")>0){
+        TFile *f = new TFile(parser.stringValue("outputFile").c_str(),"READ");
+        std::cout<<"Creating new outputfile"<<std::endl;
+        std::string newFileName = parser.stringValue("newFile");
 
-		fProduce = new TFile(newFileName.c_str(),"RECREATE");
-		copyFiles(parser, f, fProduce);//new TFile(parser.stringValue("outputFile").c_str()+"SVFit","UPDATE");
-		fProduce = new TFile(newFileName.c_str(),"UPDATE");
-		std::cout<<"listing the directories================="<<std::endl;
-		fProduce->ls();
-		readdir(fProduce,parser,TreeToUse,parser.doubleValue("recoilType"),parser.doubleValue("doES"),
-                            parser.doubleValue("isWJets"),parser.doubleValue("metType"));
-		fProduce->Close();
-		f->Close();
-	}
-	else{
-		TFile *f = new TFile(parser.stringValue("outputFile").c_str(),"UPDATE");
-		readdir(f,parser,TreeToUse,parser.doubleValue("recoilType"),parser.doubleValue("doES"),
-                            parser.doubleValue("isWJets"),parser.doubleValue("metType"));
-		f->Close();
-	}
+        fProduce = new TFile(newFileName.c_str(),"RECREATE");
+        copyFiles(parser, f, fProduce);//new TFile(parser.stringValue("outputFile").c_str()+"SVFit","UPDATE");
+        fProduce = new TFile(newFileName.c_str(),"UPDATE");
+        std::cout<<"listing the directories================="<<std::endl;
+        fProduce->ls();
+        readdir(fProduce,parser,TreeToUse,parser.doubleValue("recoilType"),parser.doubleValue("doES"),
+                parser.doubleValue("isWJets"),parser.doubleValue("metType"));
+        fProduce->Close();
+        f->Close();
+    }
+    else{
+        TFile *f = new TFile(parser.stringValue("outputFile").c_str(),"UPDATE");
+        readdir(f,parser,TreeToUse,parser.doubleValue("recoilType"),parser.doubleValue("doES"),
+                parser.doubleValue("isWJets"),parser.doubleValue("metType"));
+        f->Close();
+    }
 
 
 } 
@@ -257,10 +257,10 @@ void readdir(TDirectory *dir, optutl::CommandLineParser parser, char TreeToUse[]
                 t->SetBranchAddress("mvametphi",&metphi);
             }
             if (metType==-1.0){
-                t->SetBranchAddress("metcov00",&covMatrix00);
-                t->SetBranchAddress("metcov01",&covMatrix01);
-                t->SetBranchAddress("metcov10",&covMatrix10);
-                t->SetBranchAddress("metcov11",&covMatrix11);
+                t->SetBranchAddress("cov00",&covMatrix00);
+                t->SetBranchAddress("cov01",&covMatrix01);
+                t->SetBranchAddress("cov10",&covMatrix10);
+                t->SetBranchAddress("cov11",&covMatrix11);
                 t->SetBranchAddress("pfmet",&met);
                 t->SetBranchAddress("pfmetphi",&metphi);
             }
@@ -323,46 +323,9 @@ void readdir(TDirectory *dir, optutl::CommandLineParser parser, char TreeToUse[]
                     mvametcorr_ex = measuredMETx;
                     mvametcorr_ey = measuredMETy;
                 }
-                float scale =1.0;
-                float cecile =1.0;
-                if (shift=="nom"){
-                    if (decayMode==0) scale = 0.982; 
-                    else if (decayMode==1) scale = 1.010;
-                    else if (decayMode==10) scale = 1.004;
-                }
-                else if (shift=="up"){
-                    if (decayMode==0) scale = 0.982*1.006; 
-                    else if (decayMode==1) scale = 1.010*1.006;
-                    else if (decayMode==10) scale = 1.004*1.006;
-                }
-                else if (shift=="down"){
-                    if (decayMode==0) scale = 0.982*0.994; 
-                    else if (decayMode==1) scale = 1.010*0.994;
-                    else if (decayMode==10) scale = 1.004*0.994;
-                }
-                if (shift=="nom"){
-                    if (decayMode==0) cecile = 0.982;
-                    else if (decayMode==1) cecile = 1.010;
-                    else if (decayMode==10) cecile = 1.004;
-                }
-                float dx2, dy2;
-                float dx3, dy3;
-                dx2 = pt2 * TMath::Cos( phi2 ) * (1.-( 1. / scale ) );
-                dy2 = pt2 * TMath::Sin( phi2 ) * (1.-( 1. / scale ) );
-                dx3 = pt2 * TMath::Cos( phi2 ) * (1.-( 1. / cecile ) );
-                dy3 = pt2 * TMath::Sin( phi2 ) * (1.-( 1. / cecile ) );
-                std::cout<<"metcorr_ex: "<<mvametcorr_ex<<std::endl;
-                std::cout<<"metcorr_ey: "<<mvametcorr_ey<<std::endl;
-                std::cout<<"dx: "<<dx2<<std::endl;
-                std::cout<<"dy: "<<dy2<<std::endl;
-                mvametcorr_ex = mvametcorr_ex - dx2;
-                mvametcorr_ey = mvametcorr_ey - dy2;
 
-                std::cout<<"shift: "<<shift<<std::endl;
-                std::cout<<"metcorr_ex-dx: "<<mvametcorr_ex<<std::endl;
-                std::cout<<"metcorr_ex-dx: "<<mvametcorr_ex<<std::endl;
-                std::cout<<"metcorr_ex-dx cecile: "<<mvametcorr_ex-dx3<<std::endl;
-                std::cout<<"metcorr_ey-dy cecile: "<<mvametcorr_ey-dy3<<std::endl;
+                //std::cout<<"metcorr_ex: "<<mvametcorr_ex<<std::endl;
+                //std::cout<<"metcorr_ey: "<<mvametcorr_ey<<std::endl;
                 mvamet = TMath::Sqrt( mvametcorr_ex*mvametcorr_ex + mvametcorr_ey*mvametcorr_ey);
                 mvametphi = TMath::ATan2( mvametcorr_ey, mvametcorr_ex );
 
@@ -384,7 +347,7 @@ void readdir(TDirectory *dir, optutl::CommandLineParser parser, char TreeToUse[]
                 covMET[0][1] =  covMatrix01;
                 covMET[1][1] =  covMatrix11;
                 //std::cout<<"getting decay mode "<< decayMode<<std::endl;
-                if((channel!="tt"&&channel!="em")&&(decayMode==0||decayMode==1||decayMode==10)&&genMatch2==5){
+                if((channel!="tt"&&channel!="em")&&(decayMode==0||decayMode==1||decayMode==10)){
                     // define lepton four vectors
                     std::vector<svFitStandalone::MeasuredTauLepton> measuredTauLeptons;
                     // check if electron or muon
@@ -395,16 +358,16 @@ void readdir(TDirectory *dir, optutl::CommandLineParser parser, char TreeToUse[]
                     measuredTauLeptons.push_back(
                             svFitStandalone::MeasuredTauLepton(decayType2,  pt2, eta2, phi2,  mass2, decayMode)
                             ); // tau -> 1prong0pi0 hadronic decay (Pt, eta, phi, mass, pat::Tau.decayMode())
-                    std::cout<< "evt: "<<evt<<" run: "<<run<<" lumi: "<<lumi<< " pt1 " << pt1 << " mass1 " << mass1 << " pt2: "<< pt2<< " mass2: "<< mass2 <<std::endl;        
-                    std::cout<< "tauDM: "<<decayMode<<std::endl;
-                    std::cout<< "met: "<<met<<" recoilmet: "<<mvamet<<std::endl;
-                    std::cout<< "met00: "<<covMatrix00<<" met11: "<<covMatrix11<<" met10: "<<covMatrix10<<" met01: "<<covMatrix01<<std::endl;
+                    //std::cout<< "evt: "<<evt<<" run: "<<run<<" lumi: "<<lumi<< " pt1 " << pt1 << " mass1 " << mass1 << " pt2: "<< pt2<< " mass2: "<< mass2 <<std::endl;        
+                    //std::cout<< "tauDM: "<<decayMode<<std::endl;
+                    //std::cout<< "met: "<<met<<" recoilmet: "<<mvamet<<std::endl;
+                    //std::cout<< "met00: "<<covMatrix00<<" met11: "<<covMatrix11<<" met10: "<<covMatrix10<<" met01: "<<covMatrix01<<std::endl;
 
 
 
                     //modified
                     runSVFit(measuredTauLeptons, inputFile_visPtResolution, mvametcorr_ex, mvametcorr_ey, covMET, 0, svFitMass, svFitPt, svFitEta, svFitPhi, svFitMET, svFitTransverseMass);
-                    std::cout<<"finished runningSVFit"<<std::endl;
+                    //std::cout<<"finished runningSVFit"<<std::endl;
                 } // eTau / muTau
                 else {
                     svFitMass = -100;
